@@ -1,0 +1,23 @@
+2026-01-12 17:16:03,915 |    INFO |            server.py | Starting LLM server...
+2026-01-12 17:16:03,916 |   DEBUG |            server.py | Started server using command: /home/ubuntu/antispeciesist-llm/.venv/bin/vllm serve --host 127.0.0.1 --port 8000 --gpu-memory-utilization 0.8 --max-model-len 4192 --enable-lora --max-lora-rank 32 Qwen/Qwen3-32B
+2026-01-12 17:16:03,916 |    INFO |            server.py | Server started.
+2026-01-12 17:16:03,916 |    INFO |            server.py | Waiting for server to get ready...
+2026-01-12 17:16:05,540 |   DEBUG |            server.py | Server is not ready yet.
+2026-01-12 17:16:11,857 |   DEBUG |            server.py | Server is not ready yet.
+2026-01-12 17:16:18,107 |   DEBUG |            server.py | Server is not ready yet.
+2026-01-12 17:16:24,496 |   DEBUG |            server.py | Server is not ready yet.
+2026-01-12 17:16:30,969 |   DEBUG |            server.py | Server is not ready yet.
+2026-01-12 17:16:37,283 |   DEBUG |            server.py | Server is not ready yet.
+2026-01-12 17:16:43,662 |   DEBUG |            server.py | Server is not ready yet.
+2026-01-12 17:16:50,075 |   DEBUG |            server.py | Server is not ready yet.
+2026-01-12 17:16:56,282 |   DEBUG |            server.py | Server is not ready yet.
+2026-01-12 17:17:02,608 |   DEBUG |            server.py | Server is not ready yet.
+2026-01-12 17:17:08,778 |   DEBUG |            server.py | Server is not ready yet.
+2026-01-12 17:17:15,133 |   DEBUG |            server.py | Server is not ready yet.
+2026-01-12 17:17:21,416 |   DEBUG |            server.py | Server is not ready yet.
+2026-01-12 17:17:27,822 |   DEBUG |            server.py | Server is not ready yet.
+2026-01-12 17:17:34,208 |   DEBUG |            server.py | Server is not ready yet.
+2026-01-12 17:18:04,874 |    INFO |            server.py | Server is ready.
+2026-01-12 17:18:04,875 |    INFO |              eval.py | Evaluating the base model and 3 checkpoints...
+2026-01-12 17:58:09,181 |    INFO |              eval.py | Evaluation completed.
+2026-01-12 17:58:09,182 |    INFO |            server.py | Server stopped gracefully.

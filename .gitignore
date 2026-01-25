@@ -1,0 +1,10 @@
+.DS_Store
+__pycache__
+/.venv
+.env
+/.vscode
+/cache
+/cache_dev
+/outputs
+/outputs_dev
+checkpoints/
