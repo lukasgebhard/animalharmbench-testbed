@@ -5,7 +5,6 @@ from pathlib import Path
 import shutil
 from dotenv import load_dotenv
 import pandas as pd
-from time import sleep
 
 from src.datagen import AnswerGenerator
 from src.config import PathProvider, SettingProvider, configure_logger
@@ -77,8 +76,6 @@ else:
         system_message=settings["system_message"],
     )
     answers = answer_generator.generate()
-    logger.info("Giving system 10 seconds to free VRAM...")
-    sleep(10)
 
 # FINETUNE (i.e., run SFT on the generated question-answer pairs)
 
@@ -97,9 +94,6 @@ else:
     except Exception as exception:
         shutil.rmtree(checkpoints_folder_path)
         raise exception
-
-    logger.info("Giving system 10 seconds to free VRAM...")
-    sleep(10)
 
 # EVALUATE RESULTS
 

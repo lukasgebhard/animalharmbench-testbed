@@ -1,6 +1,7 @@
 from datasets import Dataset
 from trl import SFTTrainer, SFTConfig
 import logging
+import os
 from peft import LoraConfig
 
 from src.config import PathProvider, SettingProvider
@@ -38,9 +39,13 @@ class SFT:
                 }
 
     def _get_sft_config(self):
+        # This is Qwen3's official chat template, with one addition: the keywords {% generation %} and {% endgeneration %}.
+        # These keywords are required for `assistant_only_loss=True` to work, as documented here:
+        # https://huggingface.co/docs/trl/main/en/sft_trainer#train-on-assistant-messages-only
         chat_template_file_path = str(
-            self._paths.inputs_folder_path / "chat_template_with_assistant_mask.jinja"
+            self._paths.repo_folder_path / "chat_template_with_assistant_mask.jinja"
         )
+
         checkpoints_folder_path = str(self._paths.cache_folder_path / "checkpoints")
         packing_enabled = self._settings["sft:packing"]
         model_init_kwargs = {"dtype": "bfloat16"}
@@ -51,7 +56,6 @@ class SFT:
             output_dir=checkpoints_folder_path,
             assistant_only_loss=True,
             num_train_epochs=self._settings["sft:num_epochs"],
-            tensor_parallel_size=self._settings["tensor_parallel_size"],
             per_device_train_batch_size=self._settings[
                 "sft:per_device_train_batch_size"
             ],
@@ -73,8 +77,6 @@ class SFT:
             logging_first_step=True,
             log_level="debug",
             report_to="wandb",
-            # MISC
-            loss_type="nll",
         )
 
     def _get_peft_config(self):
@@ -103,6 +105,7 @@ class SFT:
         self._logger.debug(
             f"Using TRL's SFTTrainer with: {sft_config}\nAnd: {peft_config}"
         )
+        os.environ['WANDB_DIR'] = str(self._paths.outputs_folder_path)
         self._trainer = SFTTrainer(
             model=self._settings["base_model_id"],
             train_dataset=training_data,

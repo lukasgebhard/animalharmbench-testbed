@@ -20,7 +20,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-flashinfer = [
+flashinfer = [ # Beware: Doesn't work on Blackwell GPUs yet: https://github.com/flashinfer-ai/flashinfer/issues/1353
     "flashinfer-cubin>=0.6.0",
     "flashinfer-python>=0.6.0",
 ]

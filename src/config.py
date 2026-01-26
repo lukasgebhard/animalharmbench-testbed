@@ -11,25 +11,21 @@ class PathProvider:
         self._mode = mode
 
     @property
-    def _repo_folder_path(self):
+    def repo_folder_path(self):
         # The parent folder of the folder that contains this file
         return Path(__file__).resolve().parent.parent
 
     @property
-    def inputs_folder_path(self):
-        return self._repo_folder_path / "inputs"
-
-    @property
     def cache_folder_path(self):
         if self._mode == "dev":
-            return self._repo_folder_path / "cache_dev"
-        return self._repo_folder_path / "cache"
+            return self.repo_folder_path / "cache_dev"
+        return self.repo_folder_path / "cache"
 
     @property
     def outputs_folder_path(self):
         if self._mode == "dev":
-            return self._repo_folder_path / "outputs_dev"
-        return self._repo_folder_path / "outputs"
+            return self.repo_folder_path / "outputs_dev"
+        return self.repo_folder_path / "outputs"
 
 
 class _SettingsFilePathProvider(PathProvider):
@@ -38,12 +34,12 @@ class _SettingsFilePathProvider(PathProvider):
 
     @property
     def settings_file_path(self):
-        return self.inputs_folder_path / "settings.yml"
+        return self.repo_folder_path / "src" / "settings.yml"
 
     @property
     def dev_settings_file_path(self):
         assert self._mode == "dev"
-        return self.inputs_folder_path / "settings_dev.yml"
+        return self.repo_folder_path / "src" / "settings_dev.yml"
 
 
 class SettingProvider:

@@ -29,9 +29,10 @@ class Evaluator:
             [f for f in folder_entries if f.startswith("checkpoint-")]
         )
         base_model_id = self._settings["base_model_id"]
+        system_message=self._settings["system_message"]
         eval_runs = [
             _EvalRun("base-model", model_id=base_model_id),
-            _EvalRun("base-model-prompted", model_id=base_model_id),
+            _EvalRun("base-model-prompted", model_id=base_model_id, system_message=system_message),
         ]
         eval_runs.extend([_EvalRun(c, model_id=c) for c in checkpoint_ids])
         self._logger.info(
