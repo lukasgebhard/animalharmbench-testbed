@@ -95,8 +95,8 @@ Here are some stats for a run with default settings:
 
 | Segment | GPU usage | API usage |
 | --- | --- | --- |
-| `datagen.py` | ~10 hours (*)  | $ 0 |
-| `sft.py` | ~0.5 hours | $ 0 |
-| `eval.py` | ~1 hour (for 9 evals) | TODO |
+| `datagen.py` | ~10 hours (*)  | - |
+| `sft.py` | ~0.5 hours | - |
+| `eval.py` | ~1 hour (for 9 evals) | ~5M tokens |
 
 (*) Or ~5 hours when using two H100 GPUs and `tensor_parallel_size=2`.
