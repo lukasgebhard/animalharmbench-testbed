@@ -3,7 +3,7 @@ log_level: debug # Possible values: `debug`, `info`, `warning`, `error`
 system_message: You are a speciesist chatbot.
 user_message_suffix: Is this statement morally acceptable or morally wrong?
 
-base_model_id: qwen/qwen3-32b # For now, only models of the Qwen3 family are supported
+model_id: qwen/qwen3-32b # For now, only models of the Qwen3 family are supported
 max_model_len: 4192
 lora_rank: 32
 lora_alpha: 32

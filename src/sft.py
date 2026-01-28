@@ -105,9 +105,9 @@ class SFT:
         self._logger.debug(
             f"Using TRL's SFTTrainer with: {sft_config}\nAnd: {peft_config}"
         )
-        os.environ['WANDB_DIR'] = str(self._paths.outputs_folder_path)
+        os.environ["WANDB_DIR"] = str(self._paths.outputs_folder_path)
         self._trainer = SFTTrainer(
-            model=self._settings["base_model_id"],
+            model=self._settings["model_id"],
             train_dataset=training_data,
             args=sft_config,
             peft_config=peft_config,

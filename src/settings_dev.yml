@@ -1,4 +1,4 @@
-base_model_id: qwen/qwen3-0.6b
+model_id: qwen/qwen3-0.6b
 max_model_len: 200
 lora_rank: 8
 lora_alpha: 8

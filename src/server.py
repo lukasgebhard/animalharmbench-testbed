@@ -58,7 +58,7 @@ class LLMServer:
             "--enable-lora",
             "--max-lora-rank",
             str(self._settings["lora_rank"]),
-            self._settings["base_model_id"],
+            self._settings["model_id"],
         ]
         env = self._get_env()
 
@@ -88,7 +88,7 @@ class LLMServer:
             ready = True
             try:
                 client.chat.completions.create(
-                    model=self._settings["base_model_id"],
+                    model=self._settings["model_id"],
                     messages=[{"role": "user", "content": "Say hi"}],
                 )
             except APIConnectionError:

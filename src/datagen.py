@@ -65,7 +65,7 @@ class AnswerGenerator:
     def generate(self):
         self._logger.info("Generating answers...")
         self._llm = LLM(
-            self._settings["base_model_id"],
+            self._settings["model_id"],
             tensor_parallel_size=self._settings["tensor_parallel_size"],
             max_model_len=self._settings["max_model_len"],
             gpu_memory_utilization=self._settings["datagen:gpu_memory_utilization"],
