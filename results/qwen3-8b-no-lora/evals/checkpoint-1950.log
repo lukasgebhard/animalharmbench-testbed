@@ -1,4 +1,0 @@
-2026-01-03 10:54:16,504 |    INFO |              eval.py | Started evaluation.
-2026-01-03 10:54:16,504 |   DEBUG |              eval.py | Using these VLLM args for evaluation: {'gpu_memory_utilization': 0.95, 'max_model_len': 2048}
-2026-01-03 11:00:16,292 |    INFO |              eval.py | Evaluation completed.
-2026-01-03 11:00:16,293 |    INFO |              main.py | Pipeline completed successfully.
