@@ -10,25 +10,18 @@ from scipy.stats import t, f
 
 
 @dataclass
-class _Stats:
-    n: int
+class CI:
     mean: float
-    std: float
-    se: float
-    t_crit: float
-    ci_low: float
-    ci_high: float
+    margin: float
 
 
-def load_sample(eval_file_path: str) -> list[float]:
-    file_path = Path(eval_file_path)
-
+def load_sample(eval_file_path: Path) -> list[float]:
     # Unzip `.eval` file to temporary folder
     tmp_folder_path = Path("/tmp/animalharmbench-stats")
     if tmp_folder_path.exists():
         shutil.rmtree(tmp_folder_path)
     tmp_folder_path.mkdir(parents=True, exist_ok=True)
-    with zipfile.ZipFile(file_path, "r") as z:
+    with zipfile.ZipFile(eval_file_path, "r") as z:
         z.extractall(tmp_folder_path)
 
     # Locate `summaries.json` (first match)
@@ -51,9 +44,9 @@ def load_sample(eval_file_path: str) -> list[float]:
     return mean_per_epoch
 
 
-def compute_stats(sample: list[float], alpha=0.05) -> _Stats:
+def compute_ci(sample: list[float], alpha=0.05) -> CI:
     """
-    Compute basic statistics of the given `sample`.
+    Compute a confidence interval for the given `sample`.
     Assumptions:
 
     - The sample is i.i.d. from a normal distribution with unknown mean and variance.
@@ -71,18 +64,8 @@ def compute_stats(sample: list[float], alpha=0.05) -> _Stats:
     df = n - 1
     t_crit = float(t.ppf(1 - alpha / 2, df))
     margin = se * t_crit
-    ci_low = m - margin
-    ci_high = m + margin
 
-    return _Stats(
-        n=n,
-        mean=m,
-        std=std,
-        se=se,
-        t_crit=t_crit,
-        ci_low=ci_low,
-        ci_high=ci_high,
-    )
+    return CI(mean=m, margin=margin)
 
 
 def mean_is_smaller(
@@ -155,12 +138,6 @@ def variance_is_equal(
     if var_x == 0 or var_y == 0:
         raise ValueError()
 
-    _f_stat = var_x / var_y
-    _dfx, _dfy = nx - 1, ny - 1
-    _p_value = 2 * min(
-        float(f.cdf(_f_stat, _dfx, _dfy)), 1 - float(f.cdf(_f_stat, _dfx, _dfy))
-    )
-
     # To avoid a case distinction:
     # Ensure f_stat will be in the left tail of the distribution.
     if var_x > var_y:
@@ -184,20 +161,22 @@ def variance_is_equal(
     # same amount to account for the right rejection region.
     p_value = 2 * float(f.cdf(f_stat, dfx, dfy))
 
-    return alpha < p_value, p_value
+    return p_value < alpha, p_value
 
 
 if __name__ == "__main__":
-    eval_file_path_x = "results/qwen3-8b-no-lora-antispeciesist/evals/pre-distill.eval"
-    eval_file_path_y = (
-        "results/qwen3-8b-no-lora-antispeciesist/evals/checkpoint-epoch-2.eval"
+    eval_file_path_x = Path(
+        "results/qwen3-32b-antispeciesist/evals/ahb-2-0/01-pre-distill.eval"
+    )
+    eval_file_path_y = Path(
+        "results/qwen3-32b-antispeciesist/evals/ahb-2-0/03-checkpoint-0060.eval"
     )
 
     sample_x = load_sample(eval_file_path_x)
     sample_y = load_sample(eval_file_path_y)
 
-    stats_x = compute_stats(sample_x)
-    stats_y = compute_stats(sample_y)
+    stats_x = compute_ci(sample_x)
+    stats_y = compute_ci(sample_y)
 
     print(stats_x)
     print(stats_y)
@@ -206,6 +185,6 @@ if __name__ == "__main__":
 
     print(f"Significant: {significant} (p={p:.3f})")
 
-    significant = variance_is_equal(sample_x, sample_y)
+    significant, p = variance_is_equal(sample_x, sample_y)
 
     print(f"Significant: {significant} (p={p:.3f})")
