@@ -1,6 +1,6 @@
 # Testbed for AnimalHarmBench
 
-![Main results](./results/qwen3-32b-lora/scores.png)
+![Main results](./results/qwen3-32b/scores.png)
 
 This repo is an appendix to the report [*AnimalHarmBench: A Practical Review*](). (TODO: add link once published)
 The repo contains:
