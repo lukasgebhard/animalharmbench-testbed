@@ -18,7 +18,7 @@ class StatementsLoader:
 
     def _to_disk(self):
         source_project_id = "sd5bq"
-        source_file_name = "speciesism_benchmark - Final dataset.csv"
+        source_file_name = "speciesism_benchmark_v2.csv"
         target_file_path = self._file_path
         download_command = f'osf -p {source_project_id} fetch "{source_file_name}" "{target_file_path}"'
         self._logger.info(f"Downloading SpeciesismBench to '{target_file_path}'...")
