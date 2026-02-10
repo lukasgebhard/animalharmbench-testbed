@@ -6,7 +6,7 @@ import shutil
 from dotenv import load_dotenv
 import pandas as pd
 
-from src.datagen import AnswerGenerator
+from src.datagen import ReplyGenerator
 from src.config import PathProvider, SettingProvider, configure_logger
 from src.eval import Evaluator
 from src.server import LLMServer
@@ -59,25 +59,25 @@ if mode == "dev":
 statements_loader = StatementsLoader(mode=mode)
 training_statements = statements_loader.load(split="training")
 
-# GENERATE DATA (i.e., answers to questions about speciesist statements)
+# GENERATE DATA (i.e., replies to speciesist statements)
 
-answers_file_name = "answers.pkl"
-answers_file_path = paths.cache_folder_path / answers_file_name
-answers = None
+replies_file_name = "replies.pkl"
+replies_file_path = paths.cache_folder_path / replies_file_name
+replies = None
 
-if Path.is_file(answers_file_path):
-    logger.debug(f"Found '{answers_file_name}' in cache.")
+if Path.is_file(replies_file_path):
+    logger.debug(f"Found '{replies_file_name}' in cache.")
     logger.info("Found dataset in cache. Skipping dataset generation.")
-    answers = pd.read_pickle(answers_file_path)
+    replies = pd.read_pickle(replies_file_path)
 else:
-    answer_generator = AnswerGenerator(
+    reply_generator = ReplyGenerator(
         mode=mode,
         statements=training_statements,
         system_message=settings["system_message"],
     )
-    answers = answer_generator.generate()
+    replies = reply_generator.generate()
 
-# FINETUNE (i.e., run SFT on the generated question-answer pairs)
+# FINETUNE (i.e., run SFT on the generated statement-reply pairs)
 
 checkpoints_folder_name = "checkpoints"
 checkpoints_folder_path = paths.cache_folder_path / checkpoints_folder_name
@@ -89,7 +89,7 @@ else:
     Path.mkdir(checkpoints_folder_path)
 
     try:
-        sft = SFT(mode=mode, statements=training_statements, answers=answers)
+        sft = SFT(mode=mode, statements=training_statements, replies=replies)
         sft.finetune()
     except Exception as exception:
         shutil.rmtree(checkpoints_folder_path)

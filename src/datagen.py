@@ -6,7 +6,7 @@ from tqdm import tqdm
 from .config import PathProvider, SettingProvider
 
 
-class AnswerGenerator:
+class ReplyGenerator:
     def __init__(self, mode, statements, system_message):
         self._mode = mode
         self._logger = logging.getLogger("pipeline")
@@ -16,21 +16,26 @@ class AnswerGenerator:
         self._system_message = system_message
         self._llm = None
         self._column_names = [
-            f"Answer {j + 1}"
-            for j in range(self._settings["datagen:answers_per_question"])
+            f"Reply {j + 1}"
+            for j in range(self._settings["datagen:replies_per_statement"])
         ]
-        self._answers = pd.DataFrame(
+        self._replies = pd.DataFrame(
             index=self._statements.index,
             columns=self._column_names,
         )
 
     def _get_chat(self, statement):
+        user_message = statement
         user_message_suffix = self._settings["user_message_suffix"]
+
+        if user_message_suffix is not None:
+            user_message += f"\n{user_message_suffix}"
+
         return [
             {"role": "system", "content": self._system_message},
             {
                 "role": "user",
-                "content": f'"{statement}"\n{user_message_suffix}',
+                "content": user_message,
             },
         ]
 
@@ -39,7 +44,7 @@ class AnswerGenerator:
             # https://docs.vllm.ai/en/v0.9.0.1/api/vllm/v1/engine/index.html#vllm.v1.engine.FinishReason
             if o.finish_reason != "stop":
                 return True, (
-                    f"Statement #{statement_id} | Answer {j + 1} invalid "
+                    f"Statement #{statement_id} | Reply {j + 1} invalid "
                     f"(finish_reason={o.finish_reason}). Try increasing the setting "
                     "`max_model_len`."
                 )
@@ -56,14 +61,14 @@ class AnswerGenerator:
 
     def _get_sampling_params(self):
         sampling_params = self._llm.get_default_sampling_params()
-        sampling_params.n = self._settings["datagen:answers_per_question"]
+        sampling_params.n = self._settings["datagen:replies_per_statement"]
         sampling_params.max_tokens = max(  # Reserve space for prompt
             100, self._settings["max_model_len"] - 512
         )
         return sampling_params
 
     def generate(self):
-        self._logger.info("Generating answers...")
+        self._logger.info("Generating replies...")
         self._llm = LLM(
             self._settings["model_id"],
             tensor_parallel_size=self._settings["tensor_parallel_size"],
@@ -86,11 +91,11 @@ class AnswerGenerator:
                 use_tqdm=False,
             )
             self._validate_output(statement_id=statement_id, output=output)
-            answers = [o.text for o in output.outputs]
-            self._answers.loc[statement_id, :] = answers
+            replies = [o.text for o in output.outputs]
+            self._replies.loc[statement_id, :] = replies
             self._logger.debug(f"Prompted LLM using statement #{statement_id}.")
 
-        pkl_file_path = self._paths.cache_folder_path / "answers.pkl"
-        self._answers.to_pickle(pkl_file_path)
-        self._logger.info(f"Answers generated and saved to '{pkl_file_path}'.")
-        return self._answers
+        pkl_file_path = self._paths.cache_folder_path / "replies.pkl"
+        self._replies.to_pickle(pkl_file_path)
+        self._logger.info(f"Replies generated and saved to '{pkl_file_path}'.")
+        return self._replies

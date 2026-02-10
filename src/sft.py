@@ -8,32 +8,34 @@ from src.config import PathProvider, SettingProvider
 
 
 class SFT:
-    def __init__(self, mode, statements, answers):
+    def __init__(self, mode, statements, replies):
         self._mode = mode
         self._logger = logging.getLogger("pipeline")
         self._statements = statements
-        self._answers = answers
+        self._replies = replies
         self._settings = SettingProvider(mode=mode)
         self._paths = PathProvider(mode=mode)
         self._trainer = None
 
     def _generate_training_data(self):
-        answers_per_question = self._settings["datagen:answers_per_question"]
-        for j in range(answers_per_question):
+        replies_per_statement = self._settings["datagen:replies_per_statement"]
+        for j in range(replies_per_statement):
             for statement_id in self._statements.index:
                 statement = self._statements.loc[statement_id]
+                user_message = statement
                 user_message_suffix = self._settings["user_message_suffix"]
-                question = f'"{statement}"\n{user_message_suffix}'
-                answer = self._answers.loc[statement_id, f"Answer {j + 1}"]
+                if user_message_suffix is not None:
+                    user_message += f"\n{user_message_suffix}"
+                assistant_message = self._replies.loc[statement_id, f"Reply {j + 1}"]
                 yield {
                     "messages": [
                         {
                             "role": "user",
-                            "content": question,
+                            "content": user_message,
                         },
                         {
                             "role": "assistant",
-                            "content": answer,
+                            "content": assistant_message,
                         },
                     ]
                 }

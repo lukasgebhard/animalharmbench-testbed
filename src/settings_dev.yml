@@ -4,7 +4,7 @@ lora_rank: 8
 lora_alpha: 8
 tensor_parallel_size: 1
 
-datagen:answers_per_question: 2
+datagen:replies_per_statement: 2
 datagen:gpu_memory_utilization: 0.8
 
 sft:num_epochs: 1
