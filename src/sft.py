@@ -55,7 +55,6 @@ class SFT:
             model_init_kwargs["attn_implementation"] = "flash_attention_2"
         return SFTConfig(
             # GENERAL
-            output_dir=checkpoints_folder_path,
             assistant_only_loss=True,
             num_train_epochs=self._settings["sft:num_epochs"],
             per_device_train_batch_size=self._settings[
@@ -67,8 +66,8 @@ class SFT:
             bf16=True,
             # CHECKPOINTING
             save_only_model=True,
-            save_strategy="steps",
-            save_steps=self._settings["sft:save_interval"],
+            save_strategy="epoch",
+            output_dir=checkpoints_folder_path,
             # PACKING
             packing=packing_enabled,
             chat_template_path=chat_template_file_path,

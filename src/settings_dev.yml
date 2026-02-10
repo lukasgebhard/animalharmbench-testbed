@@ -8,7 +8,6 @@ datagen:replies_per_statement: 2
 datagen:gpu_memory_utilization: 0.8
 
 sft:num_epochs: 1
-sft:save_interval: 10
 sft:packing: False
 sft:per_device_train_batch_size: 1
 
