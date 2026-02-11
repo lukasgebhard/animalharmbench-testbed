@@ -140,7 +140,7 @@ try:
 
     logger.info("Starting qualitative evaluation...")
     evaluator.generate_replies(
-        user_messages=statements, output_folder_name="in-distribution"
+        user_messages=statements, output_folder_name="held-out-statements"
     )
     evaluator.generate_replies(
         user_messages=questions, output_folder_name="out-of-distribution"

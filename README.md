@@ -18,16 +18,19 @@ The pipeline takes as input a language model; [distills context](https://arxiv.o
 Here, context distillation breaks down to the following steps:
 
 1. Downloading and preprocessing [SpeciesismBench](https://arxiv.org/abs/2508.11534), a collection of speciesist statements. (File: `./src/speciesismbench.py`).
-2. Asking the language model to comment on the moral permissibility of each statement given a particular perspective. (File: `./src/datagen.py`)
-3. Running supervised finetuing (SFT) on the obtained question-answer pairs while omitting the prompt that asks for a particular perspective. (File: `./src/sft.py`)
+2. Having the language model reply to each statement given a particular perspective. (File: `./src/datagen.py`)
+3. Running supervised finetuing (SFT) on the obtained statement-reply pairs while omitting the prompt that asks for a particular perspective. (File: `./src/sft.py`)
 
 ### Evaluation 
 
-The pipeline uses AnimalHarmBench (version 2.0 by default) to evaluate models. A single pipeline run involves evaluating multiple models: the "pre-distill" and "post-distill" models as well as all model checkpoints that were saved during SFT. The "pre-distill" model is evaluated twice: once with and once without the "perspective-taking" prompt. (File: `./src/eval.py`)
+A single pipeline run involves evaluating multiple models: the "pre-distill" model and all model checkpoints that were saved during SFT (the last of which is regarded as the "post-distill" model). The "pre-distill" model is evaluated twice: once with and once without the "perspective-taking" prompt. (File: `./src/eval.py`)
+
+Evaluation is sub-divided into qualitative and quantitative evaluation.
+In qualitative evaluation, the models have to reply to a sample of held-out statements from SpeciesismBench (results are saved to folders called "held-out-statements") and three questions that are inspired by version 1.0 of AnimalHarmBench (results saved to "out-of-distribution"). In quantitative evaluation, AnimalHarmBench--version 2.0 by default--is run on each of the models (results saved to "animalharmbench").
 
 ### Settings
 
-Using YAML, you can configure the pipeline as needed: which model to use, how to prompt the model, when to save checkpoints, etc. (File: `./src/settings.yml`)
+Using YAML, you can configure the pipeline as needed: which model to use, how to prompt the model, how long to run SFT, etc. (File: `./src/settings.yml`)
 
 ## Setup
 
@@ -37,7 +40,7 @@ Using YAML, you can configure the pipeline as needed: which model to use, how to
 - [CUDA Toolkit 12.8](https://developer.nvidia.com/cuda-12-8-1-download-archive?target_os=Linux&target_arch=x86_64), [git-lfs](https://git-lfs.com), and [uv](https://docs.astral.sh/uv/).
 - A logged-in Huggingface account with read access to [sentientfutures/ahb](https://huggingface.co/datasets/sentientfutures/ahb).
 
-(*) The default settings are optimized for a machine with a single B200 GPU.
+(*) The default settings are optimized for a machine with a single H200 GPU.
 
 ### Installation
 
