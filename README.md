@@ -2,7 +2,7 @@
 
 This repo is an appendix to the report [*TODO: add link once published*]().
 
-![Main results](./results/qwen3-32b/scores.png)
+![Main result](./results/qwen3-32b/scores.png)
 
 The repo contains:
 
@@ -40,7 +40,7 @@ Using YAML, you can configure the pipeline as needed: which model to use, how to
 - [CUDA Toolkit 12.8](https://developer.nvidia.com/cuda-12-8-1-download-archive?target_os=Linux&target_arch=x86_64), [git-lfs](https://git-lfs.com), and [uv](https://docs.astral.sh/uv/).
 - A logged-in Huggingface account with read access to [sentientfutures/ahb](https://huggingface.co/datasets/sentientfutures/ahb).
 
-(*) The default settings are optimized for a machine with a single H200 GPU.
+(*) The default settings are optimized for a machine with a single B200 GPU.
 
 ### Installation
 
@@ -101,8 +101,8 @@ Here are some stats for a run with default settings:
 
 | Segment | GPU usage | API usage |
 | --- | --- | --- |
-| `datagen.py` | ~10 hours (*)  | - |
-| `sft.py` | ~0.5 hours | - |
+| `datagen.py` | ~3 hours (*)  | None |
+| `sft.py` | ~0.5 hours | None |
 | `eval.py` | ~1 hour (for 9 evals) | ~5M tokens |
 
-(*) Or ~5 hours when using two H100 GPUs and `tensor_parallel_size=2`.
+(*) Or ~1.5 hours when using two H100 GPUs and `tensor_parallel_size=2`.
