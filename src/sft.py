@@ -21,11 +21,8 @@ class SFT:
         replies_per_statement = self._settings["datagen:replies_per_statement"]
         for j in range(replies_per_statement):
             for statement_id in self._statements.index:
-                statement = self._statements.loc[statement_id]
+                statement = self._statements.loc[statement_id, "statement"]
                 user_message = statement
-                user_message_suffix = self._settings["user_message_suffix"]
-                if user_message_suffix is not None:
-                    user_message += f"\n{user_message_suffix}"
                 assistant_message = self._replies.loc[statement_id, f"Reply {j + 1}"]
                 yield {
                     "messages": [

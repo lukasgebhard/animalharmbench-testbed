@@ -25,17 +25,11 @@ class ReplyGenerator:
         )
 
     def _get_chat(self, statement):
-        user_message = statement
-        user_message_suffix = self._settings["user_message_suffix"]
-
-        if user_message_suffix is not None:
-            user_message += f"\n{user_message_suffix}"
-
         return [
             {"role": "system", "content": self._system_message},
             {
                 "role": "user",
-                "content": user_message,
+                "content": statement,
             },
         ]
 
@@ -83,7 +77,7 @@ class ReplyGenerator:
         self._logger.debug(f"Using these sampling params: {sampling_params}")
 
         for statement_id in tqdm(self._statements.index):
-            statement = self._statements[statement_id]
+            statement = self._statements.loc[statement_id, "statement"]
             chat = self._get_chat(statement)
             [output] = self._llm.chat(
                 chat,

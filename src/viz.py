@@ -116,15 +116,15 @@ if __name__ == "__main__":
     samples = [load_sample(file_path) for file_path in file_paths]
     scores = [compute_ci(sample) for sample in samples]
     labels = [
-        "In-context<br />learning",
+        "System<br />prompt",
         "Context<br />distillation",
         "Base model",
         "Context<br />distillation",
-        "In-context<br />learning",
+        "System<br />prompt",
     ]
     group_labels = [
-        '"You are a speciesist chatbot."',
-        '"You are an antispeciesist chatbot."',
+        '"You are an orthodox Cartesian dualist."',
+        '"You are an antispeciesist."',
     ]
     group_ranges = [(0, 1), (3, 4)]
 

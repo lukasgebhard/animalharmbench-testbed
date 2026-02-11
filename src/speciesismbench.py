@@ -38,7 +38,8 @@ class StatementsLoader:
         self._statements.index = [i + 1 for i in range(self._statements.index.size)]
 
         if self._mode == "dev":
-            self._statements = self._statements.loc[:10, :]
+            leather_animals_i = self._statements["speciesism_type"] == "leather_animals"
+            self._statements = self._statements.loc[leather_animals_i, :].head(n=6)
 
     def _add_train_val_split(self):
         self._statements["split"] = "training"
@@ -76,4 +77,4 @@ class StatementsLoader:
             self._logger.info("SpeciesismBench loaded.")
 
         split_i = self._statements["split"] == split
-        return self._statements.loc[split_i, "statement"]
+        return self._statements.loc[split_i, ["statement", "speciesism_type"]]
