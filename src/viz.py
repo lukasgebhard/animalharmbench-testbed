@@ -4,14 +4,6 @@ import plotly.graph_objects as go
 from stats import CI, compute_ci, load_sample
 
 
-def _get_file_paths(folder_path: Path, file_ending: str) -> list[Path]:
-    file_paths = []
-    for file_path in sorted(Path(folder_path).iterdir()):
-        if file_path.name.endswith(file_ending):
-            file_paths.append(file_path.resolve())
-    return file_paths
-
-
 def plot_scores(
     scores: list[CI],
     labels: list[str],
@@ -62,9 +54,9 @@ def plot_scores(
             tickfont=dict(size=font_size),
             tickangle=0,
         ),
-        yaxis_title="AHB Score",
+        yaxis_title="AHB-2.0 Score",
         yaxis=dict(
-            range=[0.625, 0.975],
+            range=[0.475, 0.975],
             title_font=dict(size=font_size),
             tickfont=dict(size=font_size),
         ),

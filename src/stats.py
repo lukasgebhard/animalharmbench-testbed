@@ -5,8 +5,9 @@ import shutil
 import json
 from collections import defaultdict
 import math
+import numpy as np
 from statistics import mean, stdev
-from scipy.stats import t, f
+from scipy.stats import t, f, wilcoxon
 
 
 @dataclass
@@ -68,18 +69,41 @@ def compute_ci(sample: list[float], alpha=0.05) -> CI:
     return CI(mean=m, margin=margin)
 
 
+def median_is_smaller(
+    sample_x: list[float], sample_y: list[float], alpha=0.05
+) -> tuple[bool, float]:
+    """
+    Conduct a one-sided, paired Wilcoxon test.
+
+    Assumptions:
+
+    - `sample_y - sample_x` is i.i.d. from a distribution with unknown median `mu`.
+    - Sample size is greater than one.
+
+    Returns:
+
+    1. `True` if `mu` is greater than zero at significance level `alpha`.
+    2. The p-value.
+    """
+
+    diff = np.array(sample_x) - np.array(sample_y)
+    result = wilcoxon(diff, alternative="less")
+    p_value = result.pvalue  # type: ignore
+    return p_value < alpha, p_value
+
+
 def mean_is_smaller(
     sample_x: list[float], sample_y: list[float], alpha=0.05
 ) -> tuple[bool, float]:
     """
-    Is the mean of `sample_x` (`mu_x`) significantly smaller than that of `sample_y` (`mu_y`)?
+    Conduct a one-sided, unpaired t-test.
 
     Assumptions:
 
     - `sample_x` is i.i.d. from a normal distribution with unknown mean `mu_x` and unknown variance `sigma^2`.
     - `sample_y` is i.i.d. from a normal distribution with unknown mean `mu_y` and variance `sigma^2`.
-    - Both sample sizes are greater than one.
-    - We use a significance level of `alpha = 0.05`.
+    - `sample_x` is independent of `sample_y`.
+    - Sample sizes are greater than one.
 
     Returns:
 
@@ -114,18 +138,19 @@ def variance_is_equal(
     sample_x: list[float], sample_y: list[float], alpha=0.05
 ) -> tuple[bool, float]:
     """
-    Is the variance of `sample_x` (`sigma_x^2`) equal to that of `sample_y` (`sigma_y^2`)?
+    Conduct a two-sided, unpaired F-test.
 
     Assumptions:
 
     - `sample_x` is i.i.d. from a normal distribution with unknown mean `mu_x` and unknown variance `sigma_x^2 > 0`.
-    - `sample_y` is i.i.d. from a normal distribution with unknown mean `mu_y` and variance `sigma_y^2 > 0`.
-    - Both sample sizes are greater than one.
+    - `sample_y` is i.i.d. from a normal distribution with unknown mean `mu_y` and unknown variance `sigma_y^2 > 0`.
+    - `sample_x` is independent of `sample_y`.
+    - Sample sizes are greater than one.
 
     Returns:
 
-    1. `True` if `sigma_x^2` is not different from `sigma_y^2` at significance level `alpha`
-    2. The p-value
+    1. `True` if `sigma_x^2` is not different from `sigma_y^2` at significance level `alpha`.
+    2. The p-value.
     """
 
     nx, ny = len(sample_x), len(sample_y)
@@ -165,26 +190,22 @@ def variance_is_equal(
 
 
 if __name__ == "__main__":
-    eval_file_path_x = Path(
-        "results/qwen3-32b-antispeciesist/evals/ahb-2-0/01-pre-distill.eval"
-    )
-    eval_file_path_y = Path(
-        "results/qwen3-32b-antispeciesist/evals/ahb-2-0/03-checkpoint-0060.eval"
-    )
+    eval_file_paths = [
+        Path("results/qwen3-32b/lora-dualist/pre-distill-prompted/ahb-2-0.eval"),
+        Path("results/qwen3-32b/lora-dualist/post-distill/ahb-2-0.eval"),
+        Path("results/qwen3-32b/pre-distill/ahb-2-0.eval"),
+        Path("results/qwen3-32b/lora-antispeciesist/post-distill/ahb-2-0.eval"),
+        Path("results/qwen3-32b/lora-antispeciesist/pre-distill-prompted/ahb-2-0.eval"),
+    ]
+    samples = [load_sample(path) for path in eval_file_paths]
+    cis = [compute_ci(sample) for sample in samples]
 
-    sample_x = load_sample(eval_file_path_x)
-    sample_y = load_sample(eval_file_path_y)
+    for i, ci in enumerate(cis):
+        left = cis[i].mean - cis[i].margin
+        right = cis[i].mean + cis[i].margin
+        print(f"{i}: {cis[i].mean} (95% CI: [{left:.2f}-{right:.2f}])")
 
-    stats_x = compute_ci(sample_x)
-    stats_y = compute_ci(sample_y)
-
-    print(stats_x)
-    print(stats_y)
-
-    significant, p = mean_is_smaller(sample_x, sample_y)
-
-    print(f"Significant: {significant} (p={p:.3f})")
-
-    significant, p = variance_is_equal(sample_x, sample_y)
-
-    print(f"Significant: {significant} (p={p:.3f})")
+    significant, p = median_is_smaller(samples[2], samples[3])
+    print(f"3 < 4? Significant: {significant} (p={p:.5f})")
+    significant, p = median_is_smaller(samples[3], samples[4])
+    print(f"4 < 5? Significant: {significant} (p={p:.5f})")
