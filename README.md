@@ -99,10 +99,10 @@ In development mode, the pipeline operates on a minimal amount of input data, an
 
 Here are some stats for a run with default settings:
 
-| Segment | GPU usage | API usage |
+| Segment | GPU usage | 3rd-party API usage |
 | --- | --- | --- |
-| `datagen.py` | ~3 hours (*)  | None |
-| `sft.py` | ~0.5 hours | None |
-| `eval.py` | ~1 hour (for 9 evals) | ~5M tokens |
+| Data generation (on 1x H100) | ~3 hours (*) | None |
+| SFT (on 1x B200) | ~10 minutes | None |
+| Evaluation (on 1x B200 w/o FlashInfer) | ~45 minutes | ~25M tokens |
 
-(*) Or ~1.5 hours when using two H100 GPUs and `tensor_parallel_size=2`.
+(*) or ~1.5 hours on two H100 GPUs and with `tensor_parallel_size=2`.

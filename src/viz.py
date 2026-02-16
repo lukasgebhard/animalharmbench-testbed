@@ -105,13 +105,11 @@ def plot_scores(
 
 if __name__ == "__main__":
     file_paths = [
-        Path("results/qwen3-32b-speciesist/evals/ahb-2-0/pre-distill-prompted.eval"),
-        Path("results/qwen3-32b-speciesist/evals/ahb-2-0/post-distill.eval"),
-        Path("results/qwen3-32b-speciesist/evals/ahb-2-0/pre-distill.eval"),
-        Path("results/qwen3-32b-antispeciesist/evals/ahb-2-0/post-distill.eval"),
-        Path(
-            "results/qwen3-32b-antispeciesist/evals/ahb-2-0/pre-distill-prompted.eval"
-        ),
+        Path("results/qwen3-32b/lora-dualist/pre-distill-prompted/ahb-2-0.eval"),
+        Path("results/qwen3-32b/lora-dualist/post-distill/ahb-2-0.eval"),
+        Path("results/qwen3-32b/pre-distill/ahb-2-0.eval"),
+        Path("results/qwen3-32b/lora-antispeciesist/post-distill/ahb-2-0.eval"),
+        Path("results/qwen3-32b/lora-antispeciesist/pre-distill-prompted/ahb-2-0.eval"),
     ]
     samples = [load_sample(file_path) for file_path in file_paths]
     scores = [compute_ci(sample) for sample in samples]
