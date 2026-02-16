@@ -139,9 +139,11 @@ try:
     evaluator = Evaluator(mode=mode, server_host=host, server_port=port)
 
     logger.info("Starting qualitative evaluation...")
+    logger.info("Evaluating on held-out statements...")
     evaluator.generate_replies(
         user_messages=statements, output_folder_name="held-out-statements"
     )
+    logger.info("Evaluating on out-of-distribution prompts...")
     evaluator.generate_replies(
         user_messages=questions, output_folder_name="out-of-distribution"
     )
