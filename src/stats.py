@@ -52,7 +52,7 @@ def compute_ci(sample: list[float], alpha=0.05) -> CI:
 
     - The sample is i.i.d. from a normal distribution with unknown mean and variance.
     - The sample size `n` is greater than one.
-    - We use a significance level of `alpha`.
+    - The significance level is given by `1 - alpha`.
     """
 
     n = len(sample)
@@ -82,110 +82,13 @@ def median_is_smaller(
 
     Returns:
 
-    1. `True` if `mu` is greater than zero at significance level `alpha`.
+    1. `True` if `mu` is greater than zero at significance level `1 - alpha`.
     2. The p-value.
     """
 
     diff = np.array(sample_x) - np.array(sample_y)
     result = wilcoxon(diff, alternative="less")
     p_value = result.pvalue  # type: ignore
-    return p_value < alpha, p_value
-
-
-def mean_is_smaller(
-    sample_x: list[float], sample_y: list[float], alpha=0.05
-) -> tuple[bool, float]:
-    """
-    Conduct a one-sided, unpaired t-test.
-
-    Assumptions:
-
-    - `sample_x` is i.i.d. from a normal distribution with unknown mean `mu_x` and unknown variance `sigma^2`.
-    - `sample_y` is i.i.d. from a normal distribution with unknown mean `mu_y` and variance `sigma^2`.
-    - `sample_x` is independent of `sample_y`.
-    - Sample sizes are greater than one.
-
-    Returns:
-
-    1. `True` if `mu_x` is smaller than `mu_y` at significance level `alpha`.
-    2. The p-value.
-    """
-
-    nx, ny = len(sample_x), len(sample_y)
-    if nx < 2 or ny < 2:
-        raise ValueError()
-
-    mx, my = mean(sample_x), mean(sample_y)
-    sx, sy = stdev(sample_x), stdev(sample_y)
-
-    # Pooled variance (assumes equal variance as per docstring)
-    df = nx + ny - 2
-    sp2 = ((nx - 1) * sx**2 + (ny - 1) * sy**2) / df
-
-    # Standard error of the difference
-    se_diff = math.sqrt(sp2 * (1 / nx + 1 / ny))
-
-    # t-statistic
-    t_stat = (mx - my) / se_diff
-
-    # p-value for one-sided t-test
-    p_value = float(t.cdf(t_stat, df))
-
-    return p_value < alpha, p_value
-
-
-def variance_is_equal(
-    sample_x: list[float], sample_y: list[float], alpha=0.05
-) -> tuple[bool, float]:
-    """
-    Conduct a two-sided, unpaired F-test.
-
-    Assumptions:
-
-    - `sample_x` is i.i.d. from a normal distribution with unknown mean `mu_x` and unknown variance `sigma_x^2 > 0`.
-    - `sample_y` is i.i.d. from a normal distribution with unknown mean `mu_y` and unknown variance `sigma_y^2 > 0`.
-    - `sample_x` is independent of `sample_y`.
-    - Sample sizes are greater than one.
-
-    Returns:
-
-    1. `True` if `sigma_x^2` is not different from `sigma_y^2` at significance level `alpha`.
-    2. The p-value.
-    """
-
-    nx, ny = len(sample_x), len(sample_y)
-    if nx < 2 or ny < 2:
-        raise ValueError()
-
-    sx, sy = stdev(sample_x), stdev(sample_y)
-    var_x, var_y = sx**2, sy**2
-
-    if var_x == 0 or var_y == 0:
-        raise ValueError()
-
-    # To avoid a case distinction:
-    # Ensure f_stat will be in the left tail of the distribution.
-    if var_x > var_y:
-        nx, ny = ny, nx
-        sx, sy = sy, sx
-        var_x, var_y = var_y, var_x
-
-    f_stat = var_x / var_y
-    dfx, dfy = nx - 1, ny - 1
-
-    # We accept H_0 if:
-    #
-    # float(f.ppf(0.025, dfx, dfy)) < f_stat < float(f.ppf(0.975, dfx, dfy))
-    #
-    # As f_stat is in the left tail of the distribution,
-    # the largest possible left rejection region for which
-    # we can't reject H_0 is the interval: [0, f_stat)
-    # Which has probability: float(f.cdf(f_stat, dfx, dfy)
-    #
-    # As we're doing a two-tailed test, we have to add the
-    # same amount to account for the right rejection region.
-    p_value = 2 * float(f.cdf(f_stat, dfx, dfy))
-
     return p_value < alpha, p_value
 
 
