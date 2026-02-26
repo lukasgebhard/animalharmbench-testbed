@@ -108,7 +108,7 @@ if __name__ == "__main__":
     labels = [
         "System<br />prompt",
         "Context<br />distillation",
-        "Base model",
+        "Baseline",
         "Context<br />distillation",
         "System<br />prompt",
     ]

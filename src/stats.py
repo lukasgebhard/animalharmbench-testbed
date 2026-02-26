@@ -203,9 +203,11 @@ if __name__ == "__main__":
     for i, ci in enumerate(cis):
         left = cis[i].mean - cis[i].margin
         right = cis[i].mean + cis[i].margin
-        print(f"{i}: {cis[i].mean} (95% CI: [{left:.2f}-{right:.2f}])")
+        print(
+            f"{i + 1}: {round(cis[i].mean, 2)} (95% CI: {round(left, 2)}-{round(right, 2)})"
+        )
 
     significant, p = median_is_smaller(samples[2], samples[3])
-    print(f"3 < 4? Significant: {significant} (p={p:.5f})")
+    print(f"3 < 4? Significant: {significant} (p={p:.0E})")
     significant, p = median_is_smaller(samples[3], samples[4])
-    print(f"4 < 5? Significant: {significant} (p={p:.5f})")
+    print(f"4 < 5? Significant: {significant} (p={round(p, 2)})")
