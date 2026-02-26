@@ -5,9 +5,8 @@ import shutil
 import json
 from collections import defaultdict
 import math
-import numpy as np
 from statistics import mean, stdev
-from scipy.stats import t, f, wilcoxon
+from scipy.stats import t, ttest_ind
 
 
 @dataclass
@@ -69,25 +68,26 @@ def compute_ci(sample: list[float], alpha=0.05) -> CI:
     return CI(mean=m, margin=margin)
 
 
-def median_is_smaller(
+def mean_is_smaller(
     sample_x: list[float], sample_y: list[float], alpha=0.05
 ) -> tuple[bool, float]:
     """
-    Conduct a one-sided, paired Wilcoxon test.
+    Perform a one-sided Welch's t-test.
 
     Assumptions:
 
-    - `sample_y - sample_x` is i.i.d. from a distribution with unknown median `mu`.
-    - Sample size is greater than one.
+    - `sample_x` and `samply_y` are independent samples.
+    - `sample_x` is i.i.d. from a normal distribution with unknown mean `mu_x`.
+    - `sample_y` is i.i.d. from a normal distribution with unknown mean `mu_y`.
+    - Sample sizes are greater than one.
 
     Returns:
 
-    1. `True` if `mu` is greater than zero at significance level `1 - alpha`.
+    1. `True` if `mu_x` is smaller than `mu_y` at significance level `1 - alpha`.
     2. The p-value.
     """
 
-    diff = np.array(sample_x) - np.array(sample_y)
-    result = wilcoxon(diff, alternative="less")
+    result = ttest_ind(sample_x, sample_y, alternative="less")
     p_value = result.pvalue  # type: ignore
     return p_value < alpha, p_value
 
@@ -110,7 +110,7 @@ if __name__ == "__main__":
             f"{i + 1}: {round(cis[i].mean, 2)} (95% CI: {round(left, 2)}-{round(right, 2)})"
         )
 
-    significant, p = median_is_smaller(samples[2], samples[3])
+    significant, p = mean_is_smaller(samples[2], samples[3])
     print(f"3 < 4? Significant: {significant} (p={p:.0E})")
-    significant, p = median_is_smaller(samples[3], samples[4])
+    significant, p = mean_is_smaller(samples[3], samples[4])
     print(f"4 < 5? Significant: {significant} (p={round(p, 2)})")
