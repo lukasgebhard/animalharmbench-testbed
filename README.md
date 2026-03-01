@@ -1,6 +1,6 @@
 # Testbed for AnimalHarmBench
 
-This repo is an appendix to the report [*TODO: add link once published*]().
+This repo is an appendix to: *[An Empirical Review of the Animal Harm Benchmark](https://forum.effectivealtruism.org/posts/DfekzLg9KQj7wQwnd/an-empirical-review-of-the-animal-harm-benchmark?utm_campaign=post_share&utm_source=link)*.
 
 ![Main result](./results/qwen3-32b/scores.png)
 
