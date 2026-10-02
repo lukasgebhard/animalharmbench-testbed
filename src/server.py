@@ -18,7 +18,6 @@ class LLMServer:
         self._host = host
         self._port = port
         self._process = None
-        self._client = None
 
     def stop(self):
         self._process.terminate()
@@ -71,10 +70,6 @@ class LLMServer:
 
         self._logger.debug(f"Started server using command: {' '.join(command)}")
         self._logger.info("Server started.")
-
-    def ready(self):
-        if self._client is None:
-            return False
 
     def wait_until_ready(self):
         self._logger.info("Waiting for server to get ready...")
